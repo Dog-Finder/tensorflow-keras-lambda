@@ -4,24 +4,25 @@ service: dog-finder-visual-search
 provider:
   name: aws
   runtime: python3.6
-  # stage: dev
-  # region: us-east-1
+  memorySize: 128
+  stage: dev
+  region: us-east-1
 
-  # iamRoleStatements:
-  # - Effect: Allow
-  #   Action:
-  #     - dynamodb:Query
-  #     - dynamodb:Scan
-  #     - dynamodb:GetItem
-  #     - dynamodb:PutItem
-  #     - dynamodb:UpdateItem
-  #     - dynamodb:DeleteItem
-  #   Resource: "arn:aws:dynamodb:us-east-1:983570756921:table/dog-finder"
-  # - Effect: Allow
-  #   Action:
-  #     - s3:PutObject
-  #     - s3:GetObject
-  #   Resource: "arn:aws:s3:::dog-finder-images/*"
+  iamRoleStatements:
+  - Effect: Allow
+    Action:
+      - dynamodb:Query
+      - dynamodb:Scan
+      - dynamodb:GetItem
+      - dynamodb:PutItem
+      - dynamodb:UpdateItem
+      - dynamodb:DeleteItem
+    Resource: "arn:aws:dynamodb:us-east-1:983570756921:table/dog-finder"
+  - Effect: Allow
+    Action:
+      - s3:PutObject
+      - s3:GetObject
+    Resource: "arn:aws:s3:::dog-finder-images/*"
 
 
 functions:
@@ -29,8 +30,10 @@ functions:
     handler: handler.hello
     layers:
       - ${self:custom.tfLayer}
-      
+
   vectorize:
+    memorySize: 500
+    timeout: 300
     handler: vectorize.handler
     layers:
       - ${self:custom.tfLayer}
@@ -41,6 +44,7 @@ functions:
 
 plugins:
   - serverless-python-requirements
+  - serverless-offline
 
 custom:
   tfLayer: arn:aws:lambda:us-east-1:347034527139:layer:tf_keras_pillow:5
